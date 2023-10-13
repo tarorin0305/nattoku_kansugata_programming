@@ -3,24 +3,24 @@ import java.util.List;
 
 public class ShoppingCart {
     private List<String> items = new ArrayList<>();
-    private boolean bookAdded = false;
+    // private boolean bookAdded = false;
 
     public void addItem(String item) {
         items.add(item);
-        if (item.equals("book")) {
-            bookAdded = true;
-        }
+        // if (item.equals("book")) {
+        //     bookAdded = true;
+        // }
     }
 
     public void removeItem(String item) {
         items.remove(item);
-        if (item.equals("book")) {
-            bookAdded = false;
-        }
+        // if (item.equals("book")) {
+        //     bookAdded = false;
+        // }
     }
 
     public int getDiscountPercentage() {
-        if (bookAdded) {
+        if (items.contains("book")) {
             return 5;
         } else {
             return 0;
