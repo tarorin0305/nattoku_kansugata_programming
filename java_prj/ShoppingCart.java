@@ -2,24 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShoppingCart {
-    private List<String> items = new ArrayList<>();
-    // private boolean bookAdded = false;
-
-    public void addItem(String item) {
-        items.add(item);
-        // if (item.equals("book")) {
-        //     bookAdded = true;
-        // }
-    }
-
-    public void removeItem(String item) {
-        items.remove(item);
-        // if (item.equals("book")) {
-        //     bookAdded = false;
-        // }
-    }
-
-    public int getDiscountPercentage() {
+    public static int getDiscountPercentage(List<String> items) {
         if (items.contains("book")) {
             return 5;
         } else {
@@ -27,32 +10,27 @@ public class ShoppingCart {
         }
     }
 
-    public List<String> getItems() {
-        return new ArrayList<>(items);
-    }
-
     public static void main(String[] args) {
-        ShoppingCart cart = new ShoppingCart();
-        cart.addItem("Apple");
-        System.out.println(cart.getItems());
-        System.out.println(cart.getDiscountPercentage());
+        List<String> items = new ArrayList<>();
+        System.out.println(items);
+        System.out.println(ShoppingCart.getDiscountPercentage(items));
 
-        cart.addItem("book");
-        System.out.println(cart.getItems());
-        System.out.println(cart.getDiscountPercentage());
+        items.add("Apple");
+        System.out.println(items);
+        System.out.println(ShoppingCart.getDiscountPercentage(items));
 
-        cart.getItems().remove("book");
-        System.out.println(cart.getItems());
-        System.out.println(cart.getDiscountPercentage());
+        items.add("book");
+        System.out.println(items);
+        System.out.println(ShoppingCart.getDiscountPercentage(items));
 
-        cart.removeItem("book");
-        System.out.println(cart.getItems());
-        System.out.println(cart.getDiscountPercentage());
+        items.remove("book");
+        System.out.println(items);
+        System.out.println(ShoppingCart.getDiscountPercentage(items));
 
-        cart.addItem("book");
-        cart.addItem("book");
-        cart.removeItem("book");
-        System.out.println(cart.getItems());
-        System.out.println(cart.getDiscountPercentage());
+        items.add("book");
+        items.add("book");
+        items.remove("book");
+        System.out.println(items);
+        System.out.println(ShoppingCart.getDiscountPercentage(items));
     }
 }
