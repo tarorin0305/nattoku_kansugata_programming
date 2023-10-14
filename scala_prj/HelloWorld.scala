@@ -7,6 +7,14 @@ object Main {
     println(wordScore("Hello"))
   }
 
+  def getDiscountPercentage(items: List[String]): Int = {
+    if (items.contains("book")) {
+      5
+    } else {
+      0
+    }
+  }
+
   def add(a: Int, b: Int): Int = {
     return a + b
   }
