@@ -17,7 +17,7 @@ public class HelloWorld {
         System.out.println(words);
         System.out.println(ranking);
         System.out.println("----");
-        List<String> ranking2 = rankedWords(scoreComparatorWithBonus, words);
+        List<String> ranking2 = rankedWords(scoreWithBonusComparator, words);
         System.out.println(ranking2);
 
         System.out.println("--------");
@@ -27,19 +27,23 @@ public class HelloWorld {
         System.out.println(isHighScoringWordFunction.apply("java"));
     }
 
-    static Comparator<String> scoreComparator = 
-            new Comparator<String>() {
-                public int compare(String word1, String word2) {
-                    return Integer.compare(score(word2), score(word1));
-                }
-            };
+    // static Comparator<String> scoreComparator = 
+    //         new Comparator<String>() {
+    //             public int compare(String word1, String word2) {
+    //                 return Integer.compare(score(word2), score(word1));
+    //             }
+    //         };
+    static Comparator<String> scoreComparator =
+        (word1, word2) -> Integer.compare(score(word2), score(word1));
 
-    static Comparator<String> scoreComparatorWithBonus =
-            new Comparator<String>() {
-                public int compare(String word1, String word2) {
-                    return Integer.compare(scoreWithBonus(word2), scoreWithBonus(word1));
-                }
-            };
+    // static Comparator<String> scoreComparatorWithBonus =
+    //         new Comparator<String>() {
+    //             public int compare(String word1, String word2) {
+    //                 return Integer.compare(scoreWithBonus(word2), scoreWithBonus(word1));
+    //             }
+    //         };
+    static Comparator<String> scoreWithBonusComparator =
+        (word1, word2) -> Integer.compare(scoreWithBonus(word2), scoreWithBonus(word1));
 
     public static int calculateScore(String word) {
         int score = 0;
