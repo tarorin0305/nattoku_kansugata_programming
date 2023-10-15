@@ -7,6 +7,26 @@ object Main {
     println(wordScore("Hello"))
   }
 
+  def firstTwo(list: List[String]): List[String] = {
+    list.slice(0, 2)
+  }
+
+  def lastTwo(list: List[String]): List[String] = {
+    list.slice(list.length - 2, list.length)
+  }
+
+  def movedFirstTwoToEnd(list: List[String]): List[String] = {
+    val firstTwo = list.slice(0, 2)
+    val rest = list.slice(2, list.length)
+    rest.appendedAll(firstTwo)
+  }
+
+  def insertBeforeLast(list: List[String], item: String): List[String] = {
+    val firstToBeforeLast = list.slice(0, list.length - 1)
+    val last = list.slice(list.length - 1, list.length)
+    firstToBeforeLast.appended(item).appendedAll(last)
+  }
+
   def getDiscountPercentage(items: List[String]): Int = {
     if (items.contains("book")) {
       5
