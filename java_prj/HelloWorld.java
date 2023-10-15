@@ -7,17 +7,12 @@ import java.util.stream.Collectors;
 public class HelloWorld {
 
     public static void main(String[] args) {
-        // System.out.println(calculateScore("imperative"));
-        // System.out.println(calculateScore("declarative"));
-        // System.out.println(wordScore("imperative"));
-        // System.out.println(wordScore("declarative"));
-
         List<String> words = Arrays.asList("ada", "haskell", "scala", "java", "rust");
-        List<String> ranking = rankedWords(scoreComparator, words);
+        List<String> ranking = rankedWords(w -> score(w), words);
         System.out.println(words);
         System.out.println(ranking);
         System.out.println("----");
-        List<String> ranking2 = rankedWords(scoreWithBonusComparator, words);
+        List<String> ranking2 = rankedWords(w -> scoreWithBonus(w), words);
         System.out.println(ranking2);
 
         System.out.println("--------");
@@ -27,21 +22,8 @@ public class HelloWorld {
         System.out.println(isHighScoringWordFunction.apply("java"));
     }
 
-    // static Comparator<String> scoreComparator = 
-    //         new Comparator<String>() {
-    //             public int compare(String word1, String word2) {
-    //                 return Integer.compare(score(word2), score(word1));
-    //             }
-    //         };
     static Comparator<String> scoreComparator =
         (word1, word2) -> Integer.compare(score(word2), score(word1));
-
-    // static Comparator<String> scoreComparatorWithBonus =
-    //         new Comparator<String>() {
-    //             public int compare(String word1, String word2) {
-    //                 return Integer.compare(scoreWithBonus(word2), scoreWithBonus(word1));
-    //             }
-    //         };
     static Comparator<String> scoreWithBonusComparator =
         (word1, word2) -> Integer.compare(scoreWithBonus(word2), scoreWithBonus(word1));
 
@@ -72,10 +54,16 @@ public class HelloWorld {
         return word.replace("a", "").length();
     }
 
-    static List<String> rankedWords(Comparator<String> comparator, List<String> words) {
-        return words.stream()
-                .sorted(comparator)
-                .collect(Collectors.toList());
+    static List<String> rankedWords(Function<String, Integer> wordScore, List<String> words) {
+        Comparator<String> wordComparator =
+            (word1, word2) -> Integer.compare(
+                wordScore.apply(word2),
+                wordScore.apply(word1)
+            );
+        return words
+            .stream()
+            .sorted(wordComparator)
+            .collect(Collectors.toList());
     }
 
 }
