@@ -60,4 +60,12 @@ object Main {
   def wordScore(word: String): Int = {
     return word.length()
   }
+
+  def score(word: String): Int = {
+    word.replaceAll("a", "").length
+  }
+
+  val words = List("rust", "java")
+
+  words.sortBy(score)
 }
