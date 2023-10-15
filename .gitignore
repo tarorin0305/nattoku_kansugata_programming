@@ -3,3 +3,5 @@
 *.tasty
 .metals/*
 .scala-build/*
+target/*
+.vscode/*
