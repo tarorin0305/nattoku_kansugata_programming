@@ -5,3 +5,6 @@
 .scala-build/*
 target/*
 .vscode/*
+project/*
+.bsp/*
+sbt-launch.jar
