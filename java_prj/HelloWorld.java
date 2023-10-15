@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -60,7 +61,7 @@ public class HelloWorld {
     public static int wordScore(String word) {
         return word.replace("a", "").length();
     }
-    
+
     static int bonus(String word) {
         return word.contains("c") ? 5 : 0;
     }
@@ -78,6 +79,29 @@ public class HelloWorld {
         return words
             .stream()
             .sorted(wordComparator)
+            .collect(Collectors.toList());
+    }
+
+    // 手続き型での実装
+    // static List<Integer> wordScores(
+    //     Function<String, Integer> wordScore,
+    //     List<String> words
+    // ) {
+    //     List<Integer> result = new ArrayList<>();
+    //     for(String word : words) {
+    //         result.add(wordScore.apply(word));
+    //     }
+    //     return result;
+    // }
+
+    // Streamを使った実装
+    static List<Integer> wordScores(
+        Function<String, Integer> wordScore,
+        List<String> words
+    ) {
+        return words
+            .stream()
+            .map(wordScore)
             .collect(Collectors.toList());
     }
 

@@ -15,9 +15,15 @@ object Statistics {
     if (word.contains("s")) 7 else 0
   }
 
+  def wordScores(wordScore: String => Int, words: List[String]): List[Int] = {
+    words.map(wordScore)
+  }
+
   def main(args: Array[String]): Unit = {
     println(rankedWords(w => score(w), List("rust", "java", "scala")))
     println(rankedWords(w => score(w) + bonus(w), List("rust", "java", "scala")))
     println(rankedWords(w => score(w) + bonus(w) - penalty(w), List("rust", "java", "scala")))
+    println("--------------------")
+    println(wordScores(w => score(w) + bonus(w) - penalty(w), List("ada", "haskell", "scala", "java", "rust")))
   }
 }
