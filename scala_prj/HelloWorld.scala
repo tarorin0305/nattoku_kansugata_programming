@@ -54,8 +54,16 @@ object Main {
   }
 
   def rankedWords(wordScore: String => Int, words: List[String]): List[String] = {
-    def negativeScore(word: String): Int = -wordScore(word)
-    words.sortBy(negativeScore)
+    words.sortBy(wordScore).reverse
+  }
+
+  def score(word: String): Int = {
+    word.replaceAll("a", "").length
+  }
+
+  def scoreWithBonus(word: String): Int = {
+    val base = score(word)
+    if (word.contains("c")) base + 5 else base
   }
 
   def sortWords(wordSortFunc: String => Int, words: List[String]): List[String] = {
