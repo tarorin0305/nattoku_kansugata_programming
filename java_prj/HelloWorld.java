@@ -11,15 +11,15 @@ public class HelloWorld {
         List<String> ranking = rankedWords(w -> score(w), words);
         System.out.println(words);
         System.out.println(ranking);
-        System.out.println("----");
+        System.out.println("----1----");
         List<String> ranking2 = rankedWords(w -> scoreWithBonus(w), words);
         System.out.println(ranking2);
-
-        System.out.println("--------");
-        Function<String, Integer> scoreFunction = word -> word.replace("a", "").length();
-        System.out.println(scoreFunction.apply("java"));
-        Function<String, Boolean> isHighScoringWordFunction = word -> scoreFunction.apply(word) > 5;
-        System.out.println(isHighScoringWordFunction.apply("java"));
+        System.out.println("----2----");
+        List<String> ranking3 = rankedWords(w -> scoreWithPenalty(w), words);
+        System.out.println(ranking3);
+        System.out.println("----3----");
+        List<String> ranking4 = rankedWords(w -> score(w) + bonus(w) - penalty(w), words);
+        System.out.println(ranking4);
     }
 
     static Comparator<String> scoreComparator =
@@ -50,8 +50,23 @@ public class HelloWorld {
         }
     }
 
+    static int scoreWithPenalty(String word) {
+        int base = score(word);
+        int bonus = word.contains("c") ? 5 : 0;
+        int penalty = word.contains("s")  ? 7 : 0;
+        return base + bonus - penalty;
+    }
+
     public static int wordScore(String word) {
         return word.replace("a", "").length();
+    }
+    
+    static int bonus(String word) {
+        return word.contains("c") ? 5 : 0;
+    }
+
+    static int penalty(String word) {
+        return word.contains("s") ? 7 : 0;
     }
 
     static List<String> rankedWords(Function<String, Integer> wordScore, List<String> words) {
