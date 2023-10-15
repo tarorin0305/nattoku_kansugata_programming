@@ -61,6 +61,14 @@ object Main {
     word.replaceAll("a", "").length
   }
 
+  def bonus(word: String): Int = {
+    if (word.contains("c")) 5 else 0
+  }
+
+  def penalty(word: String): Int = {
+    if (word.contains("s")) 7 else 0
+  }
+
   def scoreWithBonus(word: String): Int = {
     val base = score(word)
     if (word.contains("c")) base + 5 else base
@@ -91,18 +99,9 @@ object Main {
   }
 
   def main(args: Array[String]): Unit = {
-    // println("Hello, world!")
-    // println(add(1, 2))
-    // println(increment(1))
-    // println(getFirstCharacter("Hello"))
-    // println(wordScore("Hello"))
-    println(rankedWords(wordScoreFunc, List("rust", "java")))
-    println(rankedWords(wordScoreFunc, List("java", "rust")))
-    println("----------------")
-    println(sortWords(wordSortByLength, List("scala", "rust", "ada")))
-    println(sortWords(wordSortByCountOfS, List("rust", "ada")))
-    println(sortIntWords(wordSortByBigOrder, List(5, 1, 2, 4, 3)))
-    println(sortWords(wordSortByCountOfSByBigOrder, List("ada", "rust")))
+    println(rankedWords(w => score(w), List("rust", "java", "scala")))
+    println(rankedWords(w => score(w) + bonus(w), List("rust", "java", "scala")))
+    println(rankedWords(w => score(w) + bonus(w) - penalty(w), List("rust", "java", "scala")))
   }
 
   // def score(word: String): Int = {
