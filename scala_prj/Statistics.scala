@@ -25,5 +25,9 @@ object Statistics {
     println(rankedWords(w => score(w) + bonus(w) - penalty(w), List("rust", "java", "scala")))
     println("--------------------")
     println(wordScores(w => score(w) + bonus(w) - penalty(w), List("ada", "haskell", "scala", "java", "rust")))
+    println(wordScores(w => w.length, List("scala", "rust", "ada")))
+    println(wordScores(w => w.count(_ == 's'), List("rust", "ada")))
+    println(List(5, 1, 2, 4, 0).map(int => -int))
+    println(List(5, 1, 2, 4, 0).map(int => int * 2))
   }
 }
