@@ -1,5 +1,6 @@
 *.class
 *.semanticdb
 *.tasty
-.metals/*
-.scala-build/*
+*.metals
+project/*
+target/*
