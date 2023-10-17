@@ -23,6 +23,18 @@ object Statistics {
     words.filter(w => wordScore(w) > 1)
   }
 
+  def wordLengthLess5(word: String): Boolean = {
+    word.length() < 5
+  }
+
+  def wordContainsS(word: String): Boolean = {
+    word.count(_ == 's') > 2
+  }
+
+  def NumberIsOdd(num: Int): Boolean = {
+    num % 2 == 1
+  }
+
   def main(args: Array[String]): Unit = {
     println(rankedWords(w => score(w), List("rust", "java", "scala")))
     println(rankedWords(w => score(w) + bonus(w), List("rust", "java", "scala")))
@@ -37,5 +49,13 @@ object Statistics {
     println(List("haskell", "rust", "ada", "scala", "java"))
     val words = List("haskell", "rust", "ada", "scala", "java")
     println(highScoringWords(w => score(w) + bonus(w) - penalty(w), words))
+    println("----------------------------------------")
+    println(List("scala", "rust", "ada").filter(word => word.length() < 5))
+    println(List("scala", "rust", "ada").filter(wordLengthLess5))
+    println(List("scala", "rust", "ada", "sss").filter(word => word.count(_ == 's') > 2))
+    println(List("scala", "rust", "ada", "sss").filter(wordContainsS))
+    println(List(5, 1, 2, 4, 0).filter(word => word % 2 == 1))
+    println(List(5, 1, 2, 4, 0).filter(NumberIsOdd))
+    println(List(5, 1, 2, 4, 0).filter(word => word > 4))
   }
 }
