@@ -19,6 +19,10 @@ object Statistics {
     words.map(wordScore)
   }
 
+  def highScoringWords(wordScore: String => Int, words: List[String]): List[String] = {
+    words.filter(w => wordScore(w) > 1)
+  }
+
   def main(args: Array[String]): Unit = {
     println(rankedWords(w => score(w), List("rust", "java", "scala")))
     println(rankedWords(w => score(w) + bonus(w), List("rust", "java", "scala")))
@@ -29,5 +33,9 @@ object Statistics {
     println(wordScores(w => w.count(_ == 's'), List("rust", "ada")))
     println(List(5, 1, 2, 4, 0).map(int => -int))
     println(List(5, 1, 2, 4, 0).map(int => int * 2))
+    println("--------------------")
+    println(List("haskell", "rust", "ada", "scala", "java"))
+    val words = List("haskell", "rust", "ada", "scala", "java")
+    println(highScoringWords(w => score(w) + bonus(w) - penalty(w), words))
   }
 }

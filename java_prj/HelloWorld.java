@@ -105,4 +105,14 @@ public class HelloWorld {
             .collect(Collectors.toList());
     }
 
+    static List<String> highScoringWords(
+        Function<String, Integer> wordScore, List<String> words
+    ) {
+        List<String> result = new ArrayList<>();
+        for (String word : words) {
+            if (wordScore.apply(word) > 1)
+                result.add(word);
+        }
+        return result;
+    }
 }
