@@ -35,27 +35,42 @@ object Statistics {
     num % 2 == 1
   }
 
+  def higherNumList(numList: List[Int]): Int => List[Int] = {
+    higherNum => numList.filter(num => num > higherNum)
+  }
+
+  def modSpecificNumList(numList: List[Int]): Int => List[Int] = {
+    specificNum => numList.filter(num => num % specificNum == 0)
+  }
+
+  def lessSpecificNumWordsList(words: List[String]): Int => List[String] = {
+    // Int => List[String]
+    specificNum => words.filter(word => word.length() < specificNum)
+  }
+
+  def moreSpecificNumOfS(wordList: List[String]): Int => List[String] = {
+    // Int => List[String]
+    specificNum => wordList.filter(word => word.count(_ == 's') >= specificNum)
+  }
+
+  def highScoringWords(wordScore: String => Int): Int => List[String] => List[String] = {
+    higherThan =>
+      words =>
+        words.filter(word => wordScore(word) > higherThan)
+  }
+
   def main(args: Array[String]): Unit = {
-    println(rankedWords(w => score(w), List("rust", "java", "scala")))
-    println(rankedWords(w => score(w) + bonus(w), List("rust", "java", "scala")))
-    println(rankedWords(w => score(w) + bonus(w) - penalty(w), List("rust", "java", "scala")))
-    println("--------------------")
-    println(wordScores(w => score(w) + bonus(w) - penalty(w), List("ada", "haskell", "scala", "java", "rust")))
-    println(wordScores(w => w.length, List("scala", "rust", "ada")))
-    println(wordScores(w => w.count(_ == 's'), List("rust", "ada")))
-    println(List(5, 1, 2, 4, 0).map(int => -int))
-    println(List(5, 1, 2, 4, 0).map(int => int * 2))
-    println("--------------------")
-    println(List("haskell", "rust", "ada", "scala", "java"))
-    val words = List("haskell", "rust", "ada", "scala", "java")
-    println(highScoringWords(w => score(w) + bonus(w) - penalty(w), words))
-    println("----------------------------------------")
-    println(List("scala", "rust", "ada").filter(word => word.length() < 5))
-    println(List("scala", "rust", "ada").filter(wordLengthLess5))
-    println(List("scala", "rust", "ada", "sss").filter(word => word.count(_ == 's') > 2))
-    println(List("scala", "rust", "ada", "sss").filter(wordContainsS))
-    println(List(5, 1, 2, 4, 0).filter(word => word % 2 == 1))
-    println(List(5, 1, 2, 4, 0).filter(NumberIsOdd))
-    println(List(5, 1, 2, 4, 0).filter(word => word > 4))
+    val funcHigherNumList = higherNumList(List(5, 1, 2, 4, 0))
+    println(funcHigherNumList(4))
+    println(funcHigherNumList(1))
+    val funcModSpecificNumList = modSpecificNumList(List(5, 1, 2, 4, 15))
+    println(funcModSpecificNumList(5))
+    println(funcModSpecificNumList(2))
+    val funcLessSpecificNumWordsList = lessSpecificNumWordsList(List("scala", "rust", "ada", "8888888"))
+    println(funcLessSpecificNumWordsList(4))
+    println(funcLessSpecificNumWordsList(7))
+    val funcMoreSpecificNumOfS = moreSpecificNumOfS(List("scala", "rust", "ada", "sss"))
+    println(funcMoreSpecificNumOfS(3))
+    println(funcMoreSpecificNumOfS(1))
   }
 }
