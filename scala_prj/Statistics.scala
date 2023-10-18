@@ -59,6 +59,22 @@ object Statistics {
         words.filter(word => wordScore(word) > higherThan)
   }
 
+  def largerThan(num: Int): Int => Boolean = {
+    int => int > num
+  }
+
+  def divisibleBy(num: Int): Int => Boolean = {
+    int => int % num == 0
+  }
+
+  def wordLengthLessThan(num: Int): String => Boolean = {
+    word => word.length < num
+  }
+
+  def wordContainsSpecificNumOfSpecificWord(num: Int): Char => String => Boolean = {
+    specificChar => word => word.count(_ == specificChar) == num
+  }
+
   def main(args: Array[String]): Unit = {
     val funcHigherNumList = higherNumList(List(5, 1, 2, 4, 0))
     println(funcHigherNumList(4))
@@ -72,5 +88,10 @@ object Statistics {
     val funcMoreSpecificNumOfS = moreSpecificNumOfS(List("scala", "rust", "ada", "sss"))
     println(funcMoreSpecificNumOfS(3))
     println(funcMoreSpecificNumOfS(1))
+    println("-------------------")
+    println(List(5, 1, 2, 4, 0).filter(largerThan(4)))
+    println(List(5, 1, 2, 4, 15).filter(divisibleBy(5)))
+    println(List("scala", "rust", "ada", "8888888").filter(wordLengthLessThan(4)))
+    println(List("scala", "rust", "ada", "sss").filter(wordContainsSpecificNumOfSpecificWord(3)('s')))
   }
 }
