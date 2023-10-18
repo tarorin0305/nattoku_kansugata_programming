@@ -75,6 +75,24 @@ object Statistics {
     specificChar => word => word.count(_ == specificChar) == num
   }
 
+  def cumulativeScore(wordScore: String => Int, words: List[String]): Int = {
+    words.foldLeft(0)((total, word) => total + wordScore(word))
+  }
+
+  def accumulate(total: Int, addedNum: Int): Int = {
+    total + addedNum
+  }
+
+  def sumWordLength(total: Int, word: String): Int = {
+    total + word.length
+  }
+
+  def totalCountOfSpecificCharInWords(specificChar: Char): (Int, String) => Int = {
+    // total: Int, word: String => totalCountOfChar: Int
+    (total, word) => total + word.count(_ == specificChar)
+  }
+
+
   def main(args: Array[String]): Unit = {
     val funcHigherNumList = higherNumList(List(5, 1, 2, 4, 0))
     println(funcHigherNumList(4))
@@ -93,5 +111,10 @@ object Statistics {
     println(List(5, 1, 2, 4, 15).filter(divisibleBy(5)))
     println(List("scala", "rust", "ada", "8888888").filter(wordLengthLessThan(4)))
     println(List("scala", "rust", "ada", "sss").filter(wordContainsSpecificNumOfSpecificWord(3)('s')))
+    println("--------------------------------------")
+    println(List(5, 1, 2, 4, 100).foldLeft(0)((total, intNum) => total + intNum))
+    println(List(5, 1, 2, 4, 100).foldLeft(0)(accumulate))
+    println(List("scala", "rust", "ada", "sss").foldLeft(0)(sumWordLength))
+    println(List("scala", "rust", "ada", "sss").foldLeft(0)(totalCountOfSpecificCharInWords('s')))
   }
 }
