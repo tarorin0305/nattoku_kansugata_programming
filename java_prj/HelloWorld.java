@@ -115,4 +115,15 @@ public class HelloWorld {
         }
         return result;
     }
+
+    static int cumulativeScore(
+        Function<String, Integer> wordScore,
+        List<String> words
+    ) {
+        int result = 0;
+        for (String word : words) {
+            result += wordScore.apply(word);
+        }
+        return result;
+    }
 }
