@@ -6,6 +6,17 @@ object Pipeline {
       Book("Modern Java in Action", List("Urma", "Fusco", "Mycroft"))
     )
 
+  case class Movie(title: String)
+  def bookAdaptions(author: String): List[Movie] = {
+    if (author == "Tolkien") {
+      List(Movie("An Unexpected Journey"), Movie("The Desolation of Smaug"))
+    } else {
+      List.empty
+    }
+  }
+
+  def recommendationFeed(books: List[Book]) = ???
+
   def main(args: Array[String]): Unit = {
     println(books
       .map(book => book.title)
