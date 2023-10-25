@@ -52,5 +52,15 @@ object Pipeline {
       println(recommendations)
       println(recommendedAuthors)
       println(friends.flatMap(recommendedBooks).flatMap(_.authors))
+
+      val result = books.flatMap(book =>
+        book.authors.flatMap(author =>
+          bookAdaptions(author).map(movie =>
+            s"You may like ${movie.title}, " +
+            s"because you lied $author's ${book.title}"
+          )
+        )
+      )
+      println(result)
   }
 }
