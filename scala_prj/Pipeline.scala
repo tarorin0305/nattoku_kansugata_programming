@@ -9,6 +9,12 @@ object Pipeline {
   case class Movie(title: String)
   val authors = List("Chiusano", "Bjarnason", "Tolkien", "Urma", "Fusco", "Mycroft")
 
+  case class Point(x: Int, y: Int)
+  case class Point3d(x: Int, y: Int, z: Int)
+  val xs = List(1)
+  val ys = List(-2, 7)
+  val zs = List(3, 4)
+
   def bookAdaptions(author: String): List[Movie] = {
     if (author == "Tolkien") {
       List(Movie("An Unexpected Journey"), Movie("The Desolation of Smaug"))
@@ -34,33 +40,36 @@ object Pipeline {
   def recommendationFeed(books: List[Book]) = ???
 
   def main(args: Array[String]): Unit = {
-    println(books
-      .map(book => book.title)
-      .filter(title => title.contains("Scala"))
-      .size)
-
-      println(books.map(book => book.authors).flatten)
-      println(books.flatMap(book => book.authors))
-      println(books.flatMap(_.authors))
-      // print split marks
-      println("-----")
-      println(authors.map(bookAdaptions).flatten)
-      println(books.flatMap(_.authors).flatMap(bookAdaptions))
-      println("-----")
-      val recommendations = friends.flatMap(recommendedBooks)
-      val recommendedAuthors = recommendations.flatMap(_.authors)
-      println(recommendations)
-      println(recommendedAuthors)
-      println(friends.flatMap(recommendedBooks).flatMap(_.authors))
-
-      val result = books.flatMap(book =>
-        book.authors.flatMap(author =>
-          bookAdaptions(author).map(movie =>
-            s"You may like ${movie.title}, " +
-            s"because you lied $author's ${book.title}"
-          )
+    val result = books.flatMap(book =>
+      book.authors.flatMap(author =>
+        bookAdaptions(author).map(movie =>
+          s"You may like ${movie.title}, " +
+          s"because you lied $author's ${book.title}"
         )
       )
-      println(result)
+    )
+    println(result)
+
+    val result2 = for {
+      book <- books
+      author <- book.authors
+      movie <- bookAdaptions(author)
+    } yield s"You may like ${movie.title}, " +
+            s"because you liked $author's ${book.title}"
+    println(result2)
+
+    val result3 = for {
+      x <- xs
+      y <- ys
+      z <- zs
+    } yield Point3d(x, y, z)
+    println(result3)
+
+    val result4 = xs.flatMap( x =>
+      ys.flatMap( y =>
+        zs.map(z => Point3d(x, y, z)))
+    )
+    println(result4)
+
   }
 }
