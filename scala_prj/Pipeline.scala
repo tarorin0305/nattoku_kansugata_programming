@@ -69,7 +69,7 @@ object Pipeline {
     if (start <= end) Some(start) else None
   }
 
-    def parse(name: String, start: Int, end: Int): Option[Event] = {
+  def parse(name: String, start: Int, end: Int): Option[Event] = {
     for {
       validName <- validateName(name)
       validEnd <- validateEnd(end)
@@ -77,48 +77,26 @@ object Pipeline {
     } yield Event(validName, validStart, validEnd)
   }
 
+  def validateLength(start: Int, end: Int, minLength: Int): Option[Int] = {
+    if (end - start >= minLength) Some(end - start) else None
+  }
+
+  def parseLongEvent(name: String, start: Int, end: Int, minLength: Int): Option[Event] = {
+    for {
+      validName <- validateName(name)
+      validStart <- validateStart(start, end)
+      validEnd <- validateEnd(end)
+      validLength <- validateLength(validStart, validEnd, minLength)
+    } yield Event(validName, validStart, validEnd)
+  }
+
   def main(args: Array[String]): Unit = {
     val points = List(Point(1, 1), Point(5, 2), Point(3, 3))
     val radiuses = List(2, 1)
     val riskyRadiuses = List(-10, 0, 2)
-    val result = for {
-      r <- radiuses
-      point <- points.filter(p => isInside(p, r))
-    } yield s"$point is inside within a radius of $r"
-    println(result)
-
-    val result2 = for {
-      r <- radiuses
-      point <- points
-      if isInside(point, r)
-    } yield s"$point is inside within a radius of $r"
-    println(result2)
-
-    val result3 = for {
-      r <- riskyRadiuses.filter(radius => radius >= 0)
-      point <- points.filter(p => isInside(p, r))
-    } yield s"$point is inside within a radius of $r"
-
-    val result4 = for {
-      r <- riskyRadiuses
-      if r >= 0
-      point <- points.filter(p => isInside(p, r))
-    } yield s"$point is inside within a radius of $r"
-
-    val result5 = for {
-      radius <- riskyRadiuses
-      // flatMapに渡せる関数を使用している。 つまり集合の要素を受け取り、集合(空集合を含む)を返す関数
-      validRadius <- vaildRadiusFilter(radius)
-      point <- points.filter(p => isInside(p, validRadius))
-    } yield s"$point is inside within a radius of $validRadius"
-    // println val result3 to 5
-    println(result3)
-    println(result4)
-    println(result5)
-
-    val result6 = parse("Apollo Program", 1961, 1972)
-    val result7 = parse("", 1961, 1972)
-    println(result6)
-    println(result7)
+    println(parseLongEvent("Apollo Program", 1961, 1972, 10))
+    println(parseLongEvent("Apollo Program2", 1961, 1972, 20))
+    println(parseLongEvent("", 1961, 1972, 30))
+    println(parseLongEvent("Apollo Program3", 1991, 1972, 5))
   }
 }
