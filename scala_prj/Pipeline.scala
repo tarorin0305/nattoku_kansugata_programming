@@ -47,6 +47,14 @@ object Pipeline {
 
   def recommendationFeed(books: List[Book]) = ???
 
+  case class Event(name: String, start: Int, end: Int)
+  def parse(name: String, start: Int, end: Int): Option[Event] = {
+    if (name.size > 0 && end < 3000 && start <= end)
+      Some(Event(name, start, end))
+    else
+      None
+  }
+
   def main(args: Array[String]): Unit = {
     val points = List(Point(1, 1), Point(5, 2), Point(3, 3))
     val radiuses = List(2, 1)
