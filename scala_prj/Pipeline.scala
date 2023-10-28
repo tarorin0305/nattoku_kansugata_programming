@@ -47,12 +47,34 @@ object Pipeline {
 
   def recommendationFeed(books: List[Book]) = ???
 
+  // Event Class
   case class Event(name: String, start: Int, end: Int)
-  def parse(name: String, start: Int, end: Int): Option[Event] = {
-    if (name.size > 0 && end < 3000 && start <= end)
-      Some(Event(name, start, end))
-    else
-      None
+
+  // def parse(name: String, start: Int, end: Int): Option[Event] = {
+  //   if (name.size > 0 && end < 3000 && start <= end)
+  //     Some(Event(name, start, end))
+  //   else
+  //     None
+  // }
+
+  def validateName(name: String): Option[String] = {
+    if (name.size > 0) Some(name) else None
+  }
+
+  def validateEnd(end: Int): Option[Int] = {
+    if (end < 3000) Some(end) else None
+  }
+
+  def validateStart(start: Int, end: Int): Option[Int] = {
+    if (start <= end) Some(start) else None
+  }
+
+    def parse(name: String, start: Int, end: Int): Option[Event] = {
+    for {
+      validName <- validateName(name)
+      validEnd <- validateEnd(end)
+      validStart <- validateStart(start, validEnd)
+    } yield Event(validName, validStart, validEnd)
   }
 
   def main(args: Array[String]): Unit = {
@@ -93,5 +115,10 @@ object Pipeline {
     println(result3)
     println(result4)
     println(result5)
+
+    val result6 = parse("Apollo Program", 1961, 1972)
+    val result7 = parse("", 1961, 1972)
+    println(result6)
+    println(result7)
   }
 }
