@@ -1,16 +1,48 @@
 object ErrorHandling {
   val rawShows = List("Breaking Bad (2008-2013)", "The Wire (2002-2008)", "Mad Men (2007-2015)")
   // parse String to TvShow
-  def parseShow(rawShow: String): TvShow = {
+  def parseShow(rawShow: String): Option[TvShow] = {
+    for {
+      name <- extractName(rawShow)
+      yearStart <- extractYearStart(rawShow)
+      yearEnd <- extractYearEnd(rawShow)
+    } yield TvShow(name, yearStart, yearEnd)
+    // val bracketOpen = rawShow.indexOf('(')
+    // val bracketClose = rawShow.indexOf(')')
+    // val dash = rawShow.indexOf('-')
+
+    // val title = rawShow.substring(0, bracketOpen).trim
+    // val yearStart = Integer.parseInt(rawShow.substring(bracketOpen + 1, dash))
+    // val yearEnd = Integer.parseInt(rawShow.substring(dash + 1, bracketClose))
+
+    // TvShow(title, yearStart, yearEnd)
+  }
+
+  def extractName(rawShow: String): Option[String] = {
     val bracketOpen = rawShow.indexOf('(')
+    if (bracketOpen > 0)
+      Some(rawShow.substring(0, bracketOpen).trim)
+    else None
+  }
+  def extractYearStart(rawShow: String): Option[Int] = {
+    val bracketOpen = rawShow.indexOf('(')
+    val dash = rawShow.indexOf('-')
+    for {
+      yearStr <- if (bracketOpen != -1 && dash > bracketOpen + 1)
+                    Some(rawShow.substring(bracketOpen + 1, dash))
+                  else None
+      year <- yearStr.toIntOption
+    } yield year
+  }
+  def extractYearEnd(rawShow: String): Option[Int] = {
     val bracketClose = rawShow.indexOf(')')
     val dash = rawShow.indexOf('-')
-
-    val title = rawShow.substring(0, bracketOpen).trim
-    val yearStart = Integer.parseInt(rawShow.substring(bracketOpen + 1, dash))
-    val yearEnd = Integer.parseInt(rawShow.substring(dash + 1, bracketClose))
-
-    TvShow(title, yearStart, yearEnd)
+    for {
+      yearEndStr <- if (bracketClose != -1 && bracketClose > dash + 1)
+                      Some(rawShow.substring(dash + 1, bracketClose))
+                    else None
+      yearEnd <- yearEndStr.toIntOption
+    } yield yearEnd
   }
 
   def parseShows(rawShows: List[String]): List[TvShow] = {
