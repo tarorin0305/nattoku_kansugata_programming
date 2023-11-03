@@ -61,20 +61,20 @@ object ErrorHandling {
   def extractSingleYearIffValidName(rawShow: String): Option[Int] = {
     for {
       name <- extractName(rawShow)
-      singleYear <- extractSingleYear(rawShow).toIntOption
+      singleYear <- extractSingleYear(rawShow)
     } yield singleYear
   }
 
   def extractStartYearOrEndYearOrSingleYearIffValidName(rawShow: String): Option[Int] = {
     for {
       name <- extractName(rawShow)
-      year <- extractYearStart(rawShow).orElse(extractYearEnd(rawShow)).orElse(extractSingleYear(rawShow)).toIntOption
+      year <- extractYearStart(rawShow).orElse(extractYearEnd(rawShow)).orElse(extractSingleYear(rawShow))
     } yield year
   }
 
-  // def parseShows(rawShows: List[String]): List[TvShow] = {
-  //   rawShows.map(parseShow)
-  // }
+  def parseShows(rawShows: List[String]): List[TvShow] = {
+    rawShows.map(parseShow).map(show => show.toList).flatten
+  }
 
   // TV Show Class
   case class TvShow(title: String, start: Int, end: Int)
@@ -85,21 +85,20 @@ object ErrorHandling {
       .reverse
   }
 
-  // def sortRawShows(rawShows: List[String]): List[TvShow] = {
-  //   val shows = parseShows(rawShows)
-  //   sortShows(shows)
-  // }
+  def sortRawShows(rawShows: List[String]): List[TvShow] = {
+    val shows = parseShows(rawShows)
+    sortShows(shows)
+  }
   val shows = List(TvShow("Breaking Bad", 2008, 2013), TvShow("The Wire", 2002, 2008),TvShow("Mad Men", 2007, 2015))
 
   def main(args: Array[String]): Unit = {
-    // println(parseShow(rawShows))
-    // println(sortShows(shows))
-    // println(parseShow("Breaking Bad (2008-2013)"))
-    // println(parseShows(rawShows))
+    val rawShows = List("The Wire (2002-2008)", "Chernobyl (2019)", "Breaking Bad 2008-2013")
 
     println(parseShow("Breaking Bad 2008-2013"))
     println(parseShow("Breaking Bad (2008-2013)"))
     println(parseShow("Chernobyl (2019)"))
     println(parseShow("Mad Men (-2015)"))
+    println("------------------")
+    println(parseShows(rawShows))
   }
 }
