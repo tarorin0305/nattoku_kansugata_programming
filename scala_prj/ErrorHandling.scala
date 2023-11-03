@@ -16,15 +16,19 @@ object ErrorHandling {
     else None
   }
 
-  def extractYearStart(rawShow: String): Option[Int] = {
+  def extractYearStart(rawShow: String): Either[String, Int] = {
     val bracketOpen = rawShow.indexOf('(')
     val dash = rawShow.indexOf('-')
-    for {
-      yearStr <- if (bracketOpen != -1 && dash > bracketOpen + 1)
-                    Some(rawShow.substring(bracketOpen + 1, dash))
-                  else None
-      year <- yearStr.toIntOption
-    } yield year
+    val yearStrEither = if (bracketOpen != -1 && dash > bracketOpen + 1)
+                          Right(rawShow.substring(bracketOpen + 1, dash))
+                        else Left(s"Could not extract year start from $rawShow")
+    yearStrEither.map(yearStr => yearStr.toIntOption.toRight(s"Could not parse $yearStr")).flatten
+    // for {
+    //   yearStr <- if (bracketOpen != -1 && dash > bracketOpen + 1)
+    //                 Some(rawShow.substring(bracketOpen + 1, dash))
+    //               else None
+    //   year <- yearStr.toIntOption
+    // } yield year
   }
 
   def extractYearEnd(rawShow: String): Option[Int] = {
@@ -72,8 +76,15 @@ object ErrorHandling {
     } yield year
   }
 
-  def parseShows(rawShows: List[String]): List[TvShow] = {
+  def _parseShows(rawShows: List[String]): List[TvShow] = {
     rawShows.map(parseShow).map(show => show.toList).flatten
+  }
+
+  def parseShows(rawShows: List[String]): Option[List[TvShow]] = {
+    val initialResult: Option[List[TvShow]] = Some(List.empty)
+    rawShows
+      .map(parseShow)
+      .foldLeft(initialResult)(addOrResign)
   }
 
   // TV Show Class
@@ -85,10 +96,10 @@ object ErrorHandling {
       .reverse
   }
 
-  def sortRawShows(rawShows: List[String]): List[TvShow] = {
-    val shows = parseShows(rawShows)
-    sortShows(shows)
-  }
+  // def sortRawShows(rawShows: List[String]): List[TvShow] = {
+  //   val shows = parseShows(rawShows)
+  //   sortShows(shows)
+  // }
   val shows = List(TvShow("Breaking Bad", 2008, 2013), TvShow("The Wire", 2002, 2008),TvShow("Mad Men", 2007, 2015))
 
   def addOrResign(parsedShows: Option[List[TvShow]], newParsedShow: Option[TvShow]): Option[List[TvShow]] = {
@@ -107,5 +118,6 @@ object ErrorHandling {
     println(parseShow("Mad Men (-2015)"))
     println("------------------")
     println(parseShows(rawShows))
+    println(parseShows(List("Chernobyl (2019)", "Breaking Bad (2008-2013)")))
   }
 }
