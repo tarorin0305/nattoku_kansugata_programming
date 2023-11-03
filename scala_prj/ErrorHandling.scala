@@ -91,6 +91,13 @@ object ErrorHandling {
   }
   val shows = List(TvShow("Breaking Bad", 2008, 2013), TvShow("The Wire", 2002, 2008),TvShow("Mad Men", 2007, 2015))
 
+  def addOrResign(parsedShows: Option[List[TvShow]], newParsedShow: Option[TvShow]): Option[List[TvShow]] = {
+    for {
+      shows <- parsedShows
+      parsedShow <- newParsedShow
+    } yield shows.appended(parsedShow)
+  }
+
   def main(args: Array[String]): Unit = {
     val rawShows = List("The Wire (2002-2008)", "Chernobyl (2019)", "Breaking Bad 2008-2013")
 
