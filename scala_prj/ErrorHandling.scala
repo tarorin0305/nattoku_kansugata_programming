@@ -1,7 +1,7 @@
 object ErrorHandling {
   val rawShows = List("Breaking Bad (2008-2013)", "The Wire (2002-2008)", "Mad Men (2007-2015)")
   // parse String to TvShow
-  def parseShow(rawShow: String): Option[TvShow] = {
+  def parseShow(rawShow: String): Either[String, TvShow] = {
     for {
       name <- extractName(rawShow)
       yearStart <- extractYearStart(rawShow).orElse(extractSingleYear(rawShow))
@@ -9,7 +9,21 @@ object ErrorHandling {
     } yield TvShow(name, yearStart, yearEnd)
   }
 
-  def extractName(rawShow: String): Option[String] = {
+  def parseShows(rawShows: List[String]): Either[String, List[TvShow]] = {
+    val initialResult: Either[String, List[TvShow]] = Right(List.empty)
+    rawShows
+      .map(parseShow)
+      .foldLeft(initialResult)(addOrResign)
+  }
+
+  def addOrResign(parsedShows: Either[String, List[TvShow]], newParsedShow: Either[String, TvShow]): Either[String, List[TvShow]] = {
+    for {
+      shows <- parsedShows
+      parsedShow <- newParsedShow
+    } yield shows.appended(parsedShow)
+  }
+
+  def extractName(rawShow: String): Either[String, String] = {
     val bracketOpen = rawShow.indexOf('(')
     if (bracketOpen > 0)
       Right(rawShow.substring(0, bracketOpen).trim)
@@ -27,7 +41,7 @@ object ErrorHandling {
     } yield yearStart
   }
 
-  def extractYearEnd(rawShow: String): Option[Int] = {
+  def extractYearEnd(rawShow: String): Either[String, Int] = {
     val bracketClose = rawShow.indexOf(')')
     val dash = rawShow.indexOf('-')
     for {
@@ -38,7 +52,7 @@ object ErrorHandling {
     } yield yearEnd
   }
 
-  def extractSingleYear(rawShow: String): Option[Int] = {
+  def extractSingleYear(rawShow: String): Either[String, Int] = {
     val dash = rawShow.indexOf('-')
     val bracketOpen = rawShow.indexOf('(')
     val bracketClose = rawShow.indexOf(')')
@@ -51,38 +65,31 @@ object ErrorHandling {
     } yield singleYear
   }
 
-  def extractSingleYearOrYearEnd(rawShow: String): Option[Int] = {
+  def extractSingleYearOrYearEnd(rawShow: String): Either[String, Int] = {
     extractSingleYear(rawShow).orElse(extractYearEnd(rawShow))
   }
 
-  def extractStartOrEndYearOrSingleYear(rawShow: String): Option[Int] = {
+  def extractStartOrEndYearOrSingleYear(rawShow: String): Either[String, Int] = {
     extractYearStart(rawShow).orElse(extractYearEnd(rawShow)).orElse(extractSingleYear(rawShow))
   }
 
-  def extractSingleYearIffValidName(rawShow: String): Option[Int] = {
+  def extractSingleYearIffValidName(rawShow: String): Either[String, Int] = {
     for {
       name <- extractName(rawShow)
       singleYear <- extractSingleYear(rawShow)
     } yield singleYear
   }
 
-  def extractStartYearOrEndYearOrSingleYearIffValidName(rawShow: String): Option[Int] = {
+  def extractStartYearOrEndYearOrSingleYearIffValidName(rawShow: String): Either[String, Int] = {
     for {
       name <- extractName(rawShow)
       year <- extractYearStart(rawShow).orElse(extractYearEnd(rawShow)).orElse(extractSingleYear(rawShow))
     } yield year
   }
 
-  def _parseShows(rawShows: List[String]): List[TvShow] = {
-    rawShows.map(parseShow).map(show => show.toList).flatten
-  }
-
-  def parseShows(rawShows: List[String]): Option[List[TvShow]] = {
-    val initialResult: Option[List[TvShow]] = Some(List.empty)
-    rawShows
-      .map(parseShow)
-      .foldLeft(initialResult)(addOrResign)
-  }
+  // def _parseShows(rawShows: List[String]): List[TvShow] = {
+  //   rawShows.map(parseShow).map(show => show.toList).flatten
+  // }
 
   // TV Show Class
   case class TvShow(title: String, start: Int, end: Int)
@@ -98,13 +105,6 @@ object ErrorHandling {
   //   sortShows(shows)
   // }
   val shows = List(TvShow("Breaking Bad", 2008, 2013), TvShow("The Wire", 2002, 2008),TvShow("Mad Men", 2007, 2015))
-
-  def addOrResign(parsedShows: Option[List[TvShow]], newParsedShow: Option[TvShow]): Option[List[TvShow]] = {
-    for {
-      shows <- parsedShows
-      parsedShow <- newParsedShow
-    } yield shows.appended(parsedShow)
-  }
 
   def main(args: Array[String]): Unit = {
     val rawShows = List("The Wire (2002-2008)", "Chernobyl (2019)", "Breaking Bad 2008-2013")
