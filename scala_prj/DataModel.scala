@@ -59,7 +59,7 @@ object DataModel {
     name: String,
     genre: MusicGenre,
     origin: Location,
-    yearsActive: PeriodInYears
+    yearsActive: YearsActive
   )
   enum MusicGenre {
     case HeavyMetal
@@ -76,11 +76,20 @@ object DataModel {
     end: Option[Int]
   )
 
+  def activeLength(artist: Artist, currentYear: Int): Int = {
+    // if artist is still active, calculate currentYear - startYear
+    // if artist is not active now, calculate endYear - startYear
+    artist.yearsActive match {
+      case YearsActive.StillActive(since) => currentYear - since
+      case YearsActive.ActiveBetween(start, end) => end - start
+    }
+  }
+
   val artists = List(
-    Artist("Metallica", MusicGenre.HeavyMetal, Location("U.S."), PeriodInYears(1981, None)),
-    Artist("Led Zeppelin", MusicGenre.HardRock, Location("England"), PeriodInYears(1968, Some(1980))),
-    Artist("Bee Gees", MusicGenre.Pop, Location("England"), PeriodInYears(1958, Some(2003))),
-    Artist("The Beatles", MusicGenre.Rock, Location("England"), PeriodInYears(1960, Some(1970))),
+    Artist("Metallica", MusicGenre.HeavyMetal, Location("U.S."), YearsActive.StillActive(1981)),
+    Artist("Led Zeppelin", MusicGenre.HardRock, Location("England"), YearsActive.ActiveBetween(1968, 1980)),
+    Artist("Bee Gees", MusicGenre.Pop, Location("England"), YearsActive.ActiveBetween(1958, 2003)),
+    Artist("The Beatles", MusicGenre.Rock, Location("England"), YearsActive.ActiveBetween(1960, 1970)),
   )
 
   val users = List(
@@ -97,23 +106,35 @@ object DataModel {
     activeBefore: Int
   ): List[Artist] = {
     artists.filter(artist =>
-      (genres.isEmpty || genres.contains(artist.genre.name)) &&
+      (genres.isEmpty || genres.contains(artist.genre)) &&
       (locations.isEmpty || locations.contains(artist.origin.name)) &&
-      (!searchByActiveYears || (
-      (artist.yearsActive.end.forall(_ >= activeAfter)) &&
-      (artist.yearsActive.start <= activeBefore))))
+      (!searchByActiveYears ||  wasArtistActive(artist, activeAfter, activeBefore)))
+  }
+
+  def wasArtistActive(
+    artist: Artist,
+    yearStart: Int,
+    yearEnd: Int
+  ): Boolean = {
+    artist.yearsActive match {
+      case YearsActive.StillActive(since) => since <= yearEnd
+      case YearsActive.ActiveBetween(start, end) => start <= yearEnd && end >= yearStart
+    }
   }
 
   def main(args: Array[String]): Unit = {
-    println(searchArtists(artists, List("Pop"), List("England"), true, 1950, 2022))
-    println(searchArtists(artists, List.empty, List("England"), true, 1950, 2022))
-    println(searchArtists(artists, List.empty, List.empty, true, 1950, 1979))
-    println("----------------------------")
-    println(noCityOrMelbourne(users))
-    println(cityIsLagos(users))
-    println(favoriteIsBeeGees(users))
-    println(cityInitialIsT(users))
-    println(noOrOverEightLengthNameArtist(users))
-    println(artistInitialIsM(users))
+    // println(searchArtists(artists, List("Pop"), List("England"), true, 1950, 2022))
+    // println(searchArtists(artists, List.empty, List("England"), true, 1950, 2022))
+    // println(searchArtists(artists, List.empty, List.empty, true, 1950, 1979))
+    // println("----------------------------")
+    // println(noCityOrMelbourne(users))
+    // println(cityIsLagos(users))
+    // println(favoriteIsBeeGees(users))
+    // println(cityInitialIsT(users))
+    // println(noOrOverEightLengthNameArtist(users))
+    // println(artistInitialIsM(users))
+    println(activeLength(Artist("Metallica", MusicGenre.HeavyMetal, Location("U.S."), YearsActive.StillActive(1981)), 2022))
+    println(activeLength(Artist("Led Zeppelin", MusicGenre.HardRock, Location("England"), YearsActive.ActiveBetween(1968, 1980)), 2022))
+    println(activeLength(Artist("Bee Gees", MusicGenre.Pop, Location("England"), YearsActive.ActiveBetween(1958, 2003)), 2022))
   }
 }
