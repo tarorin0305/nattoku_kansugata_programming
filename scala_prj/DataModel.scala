@@ -28,24 +28,59 @@ opaque type YearActiveEnd = Int
   }
 object DataModel {
 
-  case class Artist(
-    name: String,
-    genre: Genre,
-    origin: Location,
-    yearsActiveStart: YearActiveStart,
-    yearsActiveEnd: Option[YearActiveEnd]
-  )
   case class User(
     name: String,
     city: Option[String],
     favoriteArtists: List[String]
   )
 
+  def noCityOrMelbourne(users: List[User]): List[User] = {
+    // users.filter(user => user.city.isEmpty || user.city == Some("Melbourne"))
+    users.filter(user => user.city.forall(city => city == "Melbourne"))
+  }
+  def cityIsLagos(users: List[User]): List[User] = {
+    users.filter(user => user.city == Some("Lagos"))
+  }
+  def favoriteIsBeeGees(users: List[User]): List[User] = {
+    users.filter(user => user.favoriteArtists.contains("Bee Gees"))
+  }
+  def cityInitialIsT(users: List[User]): List[User] = {
+    users.filter(user => user.city.exists(_.startsWith("T")))
+  }
+  def noOrOverEightLengthNameArtist(users: List[User]): List[User] = {
+    // users.filter(user => user.favoriteArtists.exists(artist => artist.length >= 8) || user.favoriteArtists.isEmpty)
+    users.filter(user => user.favoriteArtists.forall(artist => artist.length > 8))
+  }
+  def artistInitialIsM(users: List[User]): List[User] = {
+    users.filter(user => user.favoriteArtists.exists(_.startsWith("M")))
+  }
+
+  case class Artist(
+    name: String,
+    genre: MusicGenre,
+    origin: Location,
+    yearsActive: PeriodInYears
+  )
+  enum MusicGenre {
+    case HeavyMetal
+    case HardRock
+    case Pop
+    case Rock
+  }
+  enum YearsActive {
+    case StillActive(since: Int)
+    case ActiveBetween(start: Int, end: Int)
+  }
+  case class PeriodInYears(
+    start: Int,
+    end: Option[Int]
+  )
+
   val artists = List(
-    Artist("Metallica", Genre("Heavy Metal"), Location("U.S."), YearActiveStart(1981), Some(YearActiveEnd(0))),
-    Artist("Led Zeppelin", Genre("Hard Rock"), Location("England"), YearActiveStart(1968), Some(YearActiveEnd(1980))),
-    Artist("Bee Gees", Genre("Pop"), Location("England"), YearActiveStart(1958), Some(YearActiveEnd(2003))),
-    Artist("The Beatles", Genre("Rock"), Location("England"), YearActiveStart(1960), Some(YearActiveEnd(1970))),
+    Artist("Metallica", MusicGenre.HeavyMetal, Location("U.S."), PeriodInYears(1981, None)),
+    Artist("Led Zeppelin", MusicGenre.HardRock, Location("England"), PeriodInYears(1968, Some(1980))),
+    Artist("Bee Gees", MusicGenre.Pop, Location("England"), PeriodInYears(1958, Some(2003))),
+    Artist("The Beatles", MusicGenre.Rock, Location("England"), PeriodInYears(1960, Some(1970))),
   )
 
   val users = List(
@@ -65,13 +100,20 @@ object DataModel {
       (genres.isEmpty || genres.contains(artist.genre.name)) &&
       (locations.isEmpty || locations.contains(artist.origin.name)) &&
       (!searchByActiveYears || (
-      (artist.yearsActiveEnd.forall(_.year >= activeAfter)) &&
-      (artist.yearsActiveStart.year <= activeBefore))))
+      (artist.yearsActive.end.forall(_ >= activeAfter)) &&
+      (artist.yearsActive.start <= activeBefore))))
   }
 
   def main(args: Array[String]): Unit = {
     println(searchArtists(artists, List("Pop"), List("England"), true, 1950, 2022))
     println(searchArtists(artists, List.empty, List("England"), true, 1950, 2022))
     println(searchArtists(artists, List.empty, List.empty, true, 1950, 1979))
+    println("----------------------------")
+    println(noCityOrMelbourne(users))
+    println(cityIsLagos(users))
+    println(favoriteIsBeeGees(users))
+    println(cityInitialIsT(users))
+    println(noOrOverEightLengthNameArtist(users))
+    println(artistInitialIsM(users))
   }
 }
