@@ -99,18 +99,25 @@ object DataModel {
     User("Mallory", None, List("Metallica", "Bee Gees")), User("Trent", Some("Buenos Aires"), List("Led Zeppelin"))
   )
 
+  // define searchCondition
+  enum SearchCondition {
+    case SearchByGenre(genres: List[MusicGenre])
+    case SearchByOrigin(locations: List[Location])
+    case SearchByActiveYears(start: Int, end: Int)
+  }
+
   def searchArtists(
     artists: List[Artist],
-    genres: List[String],
-    locations: List[String],
-    searchByActiveYears: Boolean,
-    activeAfter: Int,
-    activeBefore: Int
+    requiredConditions: List[SearchCondition]
   ): List[Artist] = {
     artists.filter(artist =>
-      (genres.isEmpty || genres.contains(artist.genre)) &&
-      (locations.isEmpty || locations.contains(artist.origin.name)) &&
-      (!searchByActiveYears ||  wasArtistActive(artist, activeAfter, activeBefore)))
+      requiredConditions.forall(condition =>
+        condition match {
+          case SearchCondition.SearchByGenre(genres) => genres.contains(artist.genre)
+          case SearchCondition.SearchByOrigin(locations) => locations.contains(artist.origin)
+          case SearchCondition.SearchByActiveYears(start, end) => wasArtistActive(artist, start, end)
+        }
+    ))
   }
 
   def wasArtistActive(
@@ -137,14 +144,6 @@ object DataModel {
     case SpecificArtist(artist: Artist)
     case SpecificGenre(genre: Set[MusicGenre])
   }
-
-  // enum PlaylistGenre {
-  //   case Rock
-  //   // case Pop
-  //   // case HeavyMetal
-  //   case Funk
-  //   case House
-  // }
 
   // define Song class
   case class Song(
