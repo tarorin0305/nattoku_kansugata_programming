@@ -66,6 +66,8 @@ object DataModel {
     case HardRock
     case Pop
     case Rock
+    case Funk
+    case House
   }
   enum YearsActive {
     case StillActive(since: Int)
@@ -122,19 +124,77 @@ object DataModel {
     }
   }
 
+  // define Playlist class
+  case class Playlist(
+    name: String,
+    listType: PlaylistType, // enum
+    songs: List[Song]
+  )
+
+  // define PlaylistType enum
+  enum PlaylistType {
+    case UserGenerated
+    case SpecificArtist(artist: Artist)
+    case SpecificGenre(genre: List[PlaylistGenre])
+  }
+
+  enum PlaylistGenre {
+    case Rock
+    // case Pop
+    // case HeavyMetal
+    case Funk
+    case House
+  }
+
+  // define Song class
+  case class Song(
+    artist: Artist,
+    title: String,
+  )
+
+  // define PlaylistUser class
+  case class PlaylistUser(
+    name: String
+  )
+
+  val fooFightersPlaylist: Playlist = Playlist(
+    "This is Foo Fighters",
+    PlaylistType.SpecificArtist(Artist("Foo Fighters", MusicGenre.Rock, Location("U.S."), YearsActive.StillActive(1994))),
+    List(
+      // Song(Artist("Foo Fighters", MusicGenre.Rock, Location("U.S."), YearsActive.StillActive(1994)), "Everlong"),
+      // Song(Artist("Foo Fighters", MusicGenre.Rock, Location("U.S."), YearsActive.StillActive(1994)), "The Pretender"),
+      Song(Artist("Foo Fighters", MusicGenre.Rock, Location("U.S."), YearsActive.StillActive(1994)), "Learn to Fly"),
+      Song(Artist("Foo Fighters", MusicGenre.Rock, Location("U.S."), YearsActive.StillActive(1994)), "Breakout"),
+      // Song(Artist("Foo Fighters", MusicGenre.Rock, Location("U.S."), YearsActive.StillActive(1994)), "Best of You"),
+      // Song(Artist("Foo Fighters", MusicGenre.Rock, Location("U.S."), YearsActive.StillActive(1994)), "My Hero"),
+    )
+  )
+  val deepFocusPlaylist: Playlist = Playlist(
+    "Deep Focus",
+    PlaylistType.SpecificGenre(List(PlaylistGenre.Funk, PlaylistGenre.House)),
+    List(
+      Song(Artist("Daft Punk", MusicGenre.House, Location("France"), YearsActive.ActiveBetween(1993, 2021)), "One More Time"),
+      Song(Artist("Chemical Brothers", MusicGenre.House, Location("U.S."), YearsActive.StillActive(1993)), "Hey Boy Hey Girl"),
+    )
+  )
+
+  def gatherSongs(playlists: List[Playlist], artist: Artist, genre: MusicGenre): List[Song] = {
+    // playlists の要素を順番に見ていき、引数に渡ってきた要素と同じプロパティを持っているかチェック
+    // 同じプロパティがある場合はそのplaylistのみを保持する新しいList[playlist]を返す
+    // その新しいListに対して、songsをmapで取り出す
+    val newPlayLists: List[Playlist] = playlists.filter(playlist => playlist.listType match {
+      case PlaylistType.UserGenerated => false
+      case PlaylistType.SpecificArtist(artist) => playlist.songs.exists(_.artist == artist)
+      case PlaylistType.SpecificGenre(genre) => playlist.songs.exists(_.artist.genre == genre)
+    })
+    newPlayLists.flatMap(_.songs)
+  }
+
   def main(args: Array[String]): Unit = {
-    // println(searchArtists(artists, List("Pop"), List("England"), true, 1950, 2022))
-    // println(searchArtists(artists, List.empty, List("England"), true, 1950, 2022))
-    // println(searchArtists(artists, List.empty, List.empty, true, 1950, 1979))
-    // println("----------------------------")
-    // println(noCityOrMelbourne(users))
-    // println(cityIsLagos(users))
-    // println(favoriteIsBeeGees(users))
-    // println(cityInitialIsT(users))
-    // println(noOrOverEightLengthNameArtist(users))
-    // println(artistInitialIsM(users))
     println(activeLength(Artist("Metallica", MusicGenre.HeavyMetal, Location("U.S."), YearsActive.StillActive(1981)), 2022))
     println(activeLength(Artist("Led Zeppelin", MusicGenre.HardRock, Location("England"), YearsActive.ActiveBetween(1968, 1980)), 2022))
     println(activeLength(Artist("Bee Gees", MusicGenre.Pop, Location("England"), YearsActive.ActiveBetween(1958, 2003)), 2022))
+    println("------------------")
+    println(gatherSongs(List(fooFightersPlaylist, deepFocusPlaylist), Artist("Foo Fighters", MusicGenre.Rock, Location("U.S."), YearsActive.StillActive(1994)), MusicGenre.House))
   }
 }
