@@ -33,14 +33,24 @@ object DataModel {
     genre: Genre,
     origin: Location,
     yearsActiveStart: YearActiveStart,
-    isActive: Boolean,
-    yearsActiveEnd: YearActiveEnd
+    yearsActiveEnd: Option[YearActiveEnd]
   )
+  case class User(
+    name: String,
+    city: Option[String],
+    favoriteArtists: List[String]
+  )
+
   val artists = List(
-    Artist("Metallica", Genre("Heavy Metal"), Location("U.S."), YearActiveStart(1981), true, YearActiveEnd(0)),
-    Artist("Led Zeppelin", Genre("Hard Rock"), Location("England"), YearActiveStart(1968), false, YearActiveEnd(1980)),
-    Artist("Bee Gees", Genre("Pop"), Location("England"), YearActiveStart(1958), false, YearActiveEnd(2003)),
-    Artist("The Beatles", Genre("Rock"), Location("England"), YearActiveStart(1960), false, YearActiveEnd(1970)),
+    Artist("Metallica", Genre("Heavy Metal"), Location("U.S."), YearActiveStart(1981), Some(YearActiveEnd(0))),
+    Artist("Led Zeppelin", Genre("Hard Rock"), Location("England"), YearActiveStart(1968), Some(YearActiveEnd(1980))),
+    Artist("Bee Gees", Genre("Pop"), Location("England"), YearActiveStart(1958), Some(YearActiveEnd(2003))),
+    Artist("The Beatles", Genre("Rock"), Location("England"), YearActiveStart(1960), Some(YearActiveEnd(1970))),
+  )
+
+  val users = List(
+    User("Alice", Some("Melbourne"), List("Bee Gees")), User("Bob", Some("Lagos"), List("Bee Gees")), User("Eve", Some("Tokyo"), List.empty),
+    User("Mallory", None, List("Metallica", "Bee Gees")), User("Trent", Some("Buenos Aires"), List("Led Zeppelin"))
   )
 
   def searchArtists(
@@ -52,19 +62,11 @@ object DataModel {
     activeBefore: Int
   ): List[Artist] = {
     artists.filter(artist =>
-      (genres.isEmpty || genres.contains(artist.genre.name)) && (locations.isEmpty || locations.contains(artist.origin.name)) && (!searchByActiveYears || ((artist.isActive ||
-      artist.yearsActiveEnd.year >= activeAfter) &&
+      (genres.isEmpty || genres.contains(artist.genre.name)) &&
+      (locations.isEmpty || locations.contains(artist.origin.name)) &&
+      (!searchByActiveYears || (
+      (artist.yearsActiveEnd.forall(_.year >= activeAfter)) &&
       (artist.yearsActiveStart.year <= activeBefore))))
-    // // check elements contain genre
-    // for {
-    //   artist <- artists
-    //   genre <- genres
-    //   location <- locations
-    //   if genre.isEmpty || artist.genre == genre
-    //   if artist.origin == location || location.isEmpty
-    //   if artist.yearsActiveStart >= activeAfter || activeAfter == 0
-    //   if artist.yearsActiveEnd <= activeBefore || activeBefore == 0
-    // } yield artist
   }
 
   def main(args: Array[String]): Unit = {
