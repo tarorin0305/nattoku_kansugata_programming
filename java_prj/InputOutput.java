@@ -44,6 +44,12 @@ public class InputOutput {
         }
     }
     public static void main(String[] args) {
+        schedule("Alice", "Bob", 1);
+        schedule("Alice", "Bob", 2);
+        schedule("Alice", "Bob", 3);
+        schedule("Alice", "Bob", 5);
+        schedule("Alice", "Charlie", 2);
+
     }
 
     // implement method of calendarEntriesApiCall
