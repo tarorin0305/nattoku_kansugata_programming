@@ -1,6 +1,7 @@
 import java.util.Random
 // import IO from cats.effect.IO
 import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 
 object InputOutput {
   case class MeetingTime(startHour: Int, endHour: Int)
@@ -22,6 +23,17 @@ object InputOutput {
     //   }
     //   System.out.printf("SIDE-EFFECT")
     // }
+  }
+
+  def createMeeting(names: List[String], meeting: MeetingTime): IO[Unit] = {
+    IO.delay(createMeetingApiCall(names, meeting))
+  }
+
+  def scheduleMeeting(person1: String, person2: String): IO[List[MeetingTime]] = {
+    for {
+      person1Calendar <- calendarEntries(person1)
+      person2Calendar <- calendarEntries(person2)
+    } yield person1Calendar.appendedAll(person2Calendar)
   }
 
   def main(args: Array[String]): Unit = {
