@@ -53,7 +53,12 @@ object InputOutput {
         .orElse(scheduleMeeting(person2, person1))
         .orElse(IO.pure(List.empty))
       meetings = possibleMeetings(existingMeetings, 8, 16, lengthHours)
-    } yield meetings.headOption
+      possibleMeeting = meetings.headOption
+      _ <- possibleMeeting match {
+        case Some(meeting) => createMeeting(List(person1, person2), meeting)
+        case None => IO.unit
+      }
+    } yield possibleMeeting
   }
 
   def scheduleMeeting(person1: String, person2: String): IO[List[MeetingTime]] = {
