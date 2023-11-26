@@ -50,6 +50,8 @@ object InputOutput {
   def schedule(person1: String, person2: String, lengthHours: Int): IO[Option[MeetingTime]] = {
     for {
       existingMeetings <- scheduleMeeting(person1, person2)
+        .orElse(scheduleMeeting(person2, person1))
+        .orElse(IO.pure(List.empty))
       meetings = possibleMeetings(existingMeetings, 8, 16, lengthHours)
     } yield meetings.headOption
   }
