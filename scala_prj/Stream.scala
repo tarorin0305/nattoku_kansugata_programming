@@ -95,6 +95,16 @@ object Stream {
     } yield result
   }
 
+  def currencyRate(from: Currency, to: Currency): IO[BigDecimal] = {
+    for {
+      table <- retry(exchangeTable(from), 10)
+      rate <- extractSingleCurrencyRate(to)(table) match {
+        case Some(value) => IO.pure(value)
+        case None        => currencyRate(from, to)
+      }
+    } yield rate
+  }
+
   def main(args: Array[String]): Unit = {
     val m1: Map[String, String] = Map("key" -> "value")
     val m2: Map[String, String] = m1.updated("key2", "value2")
