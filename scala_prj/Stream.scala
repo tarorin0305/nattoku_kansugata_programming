@@ -73,24 +73,28 @@ object Stream {
     table.get(currencyToExtract)
   }
 
-  def lastRates(from: Currency, to: Currency): IO[List[BigDecimal]] = {
-    for {
-      table1 <- retry(exchangeTable(from), 10)
-      table2 <- retry(exchangeTable(from), 10)
-      table3 <- retry(exchangeTable(from), 10)
-      lastTables = List(table1, table2, table3)
-    } yield lastTables.flatMap(extractSingleCurrencyRate(to))
+  def lastRates(from: Currency, to: Currency, n: Int): IO[List[BigDecimal]] = {
+    if (n < 1) {
+      IO.pure(List.empty)
+    } else {
+      for {
+        currencyRate <- currencyRate(from, to)
+        remainingRates <-
+          if (n == 1) IO.pure(List.empty)
+          else lastRates(from, to, n - 1)
+      } yield remainingRates.prepended(currencyRate)
+    }
   }
 
   def exchangeIfTrending(
       amount: BigDecimal,
       from: Currency,
       to: Currency
-  ): IO[Option[BigDecimal]] = {
+  ): IO[BigDecimal] = {
     for {
-      rates <- lastRates(from, to)
+      rates <- lastRates(from, to, 3)
       result <-
-        if (trending(rates)) IO.pure(Some(amount * rates.last))
+        if (trending(rates)) IO.pure(amount * rates.last)
         else exchangeIfTrending(amount, from, to)
     } yield result
   }
@@ -106,19 +110,8 @@ object Stream {
   }
 
   def main(args: Array[String]): Unit = {
-    val m1: Map[String, String] = Map("key" -> "value")
-    val m2: Map[String, String] = m1.updated("key2", "value2")
-    val m3: Map[String, String] = m2.removed("key2").updated("key2", "another2")
-    val m4: Map[String, String] = m3.removed("key")
-    val valueFromM3: Option[String] = m3.get("key")
-    val valueFromM4: Option[String] = m4.get("key")
-
-    // println all val above defined
-    println(m1)
-    println(m2)
-    println(m3)
-    println(m4)
-    println(valueFromM3)
-    println(valueFromM4)
+    val result =
+      exchangeIfTrending(BigDecimal(1000), Currency("USD"), Currency("EUR"))
+    println(result)
   }
 }
