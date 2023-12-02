@@ -50,9 +50,19 @@ object Stream {
   }
 
   def main(args: Array[String]): Unit = {
-    val currency = "USD"
-    val rates = exchangeRatesTableApiCall(currency)
-    println(rates)
-    // println(s"Exchange rates for $currency: $rates")
+    val m1: Map[String, String] = Map("key" -> "value")
+    val m2: Map[String, String] = m1.updated("key2", "value2")
+    val m3: Map[String, String] = m2.removed("key2").updated("key2", "another2")
+    val m4: Map[String, String] = m3.removed("key")
+    val valueFromM3: Option[String] = m3.get("key")
+    val valueFromM4: Option[String] = m4.get("key")
+
+    // println all val above defined
+    println(m1)
+    println(m2)
+    println(m3)
+    println(m4)
+    println(valueFromM3)
+    println(valueFromM4)
   }
 }
