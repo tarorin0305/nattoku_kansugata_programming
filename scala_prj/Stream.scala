@@ -7,7 +7,17 @@ import cats.syntax.applicativeError.catsSyntaxApplicativeError
 import scala.collection.mutable
 import java.math.{BigDecimal, RoundingMode}
 import scala.collection.mutable.HashMap
+import model.Currency
 
+object model {
+  opaque type Currency = String
+  object Currency {
+    def apply(name: String): Currency = name
+    extension (currency: Currency) {
+      def name: String = currency
+    }
+  }
+}
 object Stream {
 
   def exchangeRatesTableApiCall(
@@ -33,6 +43,10 @@ object Stream {
     } else {
       throw new RuntimeException("Rate not available")
     }
+  }
+
+  def exchangeTable(from: Currency): IO[Map[Currency, BigDecimal]] = {
+    ???
   }
 
   def main(args: Array[String]): Unit = {
