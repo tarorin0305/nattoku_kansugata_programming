@@ -10,6 +10,7 @@ import scala.collection.mutable.HashMap
 import model.Currency
 import scala.math.BigDecimal
 import scala.math.BigDecimal.RoundingMode
+import fs2.Stream
 
 object model {
   opaque type Currency = String
@@ -20,7 +21,7 @@ object model {
     }
   }
 }
-object Stream {
+object StreamExam {
   def retry[A](action: IO[A], maxRetries: Int): IO[A] = {
     List
       .range(0, maxRetries)
