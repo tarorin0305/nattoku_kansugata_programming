@@ -93,6 +93,7 @@ public class InputOutput {
         }
         throw new RuntimeException("Rate not available");
     }
+}
 
 // implement MeetingTime class
 class MeetingTime {
