@@ -110,14 +110,12 @@ object Stream {
     } yield rate
   }
 
+  def numbers(): LazyList[Int] = {
+    LazyList(1, 2, 3).appendedAll(numbers())
+  }
+
   def main(args: Array[String]): Unit = {
-    val result =
-      exchangeIfTrending(BigDecimal(1000), Currency("USD"), Currency("EUR"))
-    println(result)
-    val numbers = LazyList(1, 2, 3, 4, 5)
-    val oddNumbers = numbers.filter(_ % 2 == 1)
-    println(oddNumbers.toList)
-    println(numbers.toList)
-    println(oddNumbers.map(_ + 17).take(1).toList)
+    val infinite123s = numbers()
+    println(infinite123s.take(10).toList)
   }
 }
