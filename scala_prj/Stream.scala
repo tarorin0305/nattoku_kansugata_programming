@@ -87,9 +87,12 @@ object Stream {
       from: Currency,
       to: Currency
   ): IO[Option[BigDecimal]] = {
-    lastRates(from, to).map(rates =>
-      if (trending(rates)) Some(amount * rates.last) else None
-    )
+    for {
+      rates <- lastRates(from, to)
+      result <-
+        if (trending(rates)) IO.pure(Some(amount * rates.last))
+        else exchangeIfTrending(amount, from, to)
+    } yield result
   }
 
   def main(args: Array[String]): Unit = {
