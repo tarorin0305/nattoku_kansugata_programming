@@ -10,6 +10,7 @@ import scala.collection.mutable.HashMap
 import model.Currency
 import scala.math.BigDecimal
 import scala.math.BigDecimal.RoundingMode
+
 object model {
   opaque type Currency = String
   object Currency {
@@ -113,5 +114,10 @@ object Stream {
     val result =
       exchangeIfTrending(BigDecimal(1000), Currency("USD"), Currency("EUR"))
     println(result)
+    val numbers = LazyList(1, 2, 3, 4, 5)
+    val oddNumbers = numbers.filter(_ % 2 == 1)
+    println(oddNumbers.toList)
+    println(numbers.toList)
+    println(oddNumbers.map(_ + 17).take(1).toList)
   }
 }
