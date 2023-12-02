@@ -5,11 +5,11 @@ import cats.implicits.catsSyntaxApplicativeError
 import cats.syntax.all.catsSyntaxApplicativeError
 import cats.syntax.applicativeError.catsSyntaxApplicativeError
 import scala.collection.mutable
-import java.math.{BigDecimal, RoundingMode}
 import scala.math.Ordered.orderingToOrdered
 import scala.collection.mutable.HashMap
 import model.Currency
-
+import scala.math.BigDecimal
+import scala.math.BigDecimal.RoundingMode
 object model {
   opaque type Currency = String
   object Currency {
@@ -80,6 +80,16 @@ object Stream {
       table3 <- retry(exchangeTable(from), 10)
       lastTables = List(table1, table2, table3)
     } yield lastTables.flatMap(extractSingleCurrencyRate(to))
+  }
+
+  def exchangeIfTrending(
+      amount: BigDecimal,
+      from: Currency,
+      to: Currency
+  ): IO[Option[BigDecimal]] = {
+    lastRates(from, to).map(rates =>
+      if (trending(rates)) Some(amount * rates.last) else None
+    )
   }
 
   def main(args: Array[String]): Unit = {
