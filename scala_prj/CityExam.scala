@@ -7,12 +7,13 @@ import cats.syntax.applicativeError.catsSyntaxApplicativeError
 import scala.collection.mutable
 import scala.math.Ordered.orderingToOrdered
 import scala.collection.mutable.HashMap
-import model.Currency
+import modelCity.City
 import scala.math.BigDecimal
 import scala.math.BigDecimal.RoundingMode
 import fs2.Stream
+import modelCity.CityStatus
 
-object model {
+object modelCity {
   opaque type City = String
   object City {
     def apply(name: String): City = name
@@ -25,7 +26,7 @@ object model {
 object CityExam {
   def processCheckIns(checkIns: Stream[IO, City]): IO[Unit] = {
     checkIns
-      .scan(Map[City, Int])((cityCheckIns, city) =>
+      .scan(Map.empty[City, Int])((cityCheckIns, city) =>
         cityCheckIns.updatedWith(city)(_.map(_ + 1).orElse(Some(1)))
       )
       .map(topCities)
@@ -54,5 +55,20 @@ object CityExam {
       City("Cape Town"),
       City("Sydney")
     ).covary[IO]
+
+    val checkInsLong: Stream[IO, City] =
+      Stream(
+        City("Sydney"),
+        City("Dublin"),
+        City("Cape Town"),
+        City("Lima"),
+        City("Singapore")
+      )
+        .repeatN(100_000)
+        .append(Stream.range(0, 100_000).map(i => City(s"City $i")))
+        .append(Stream(City("Sydney"), City("Sydney"), City("Lima")))
+        .covary[IO]
+
+    processCheckIns(checkIns).unsafeRunSync()
   }
 }
