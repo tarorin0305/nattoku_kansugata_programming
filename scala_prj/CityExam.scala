@@ -29,6 +29,9 @@ object CityExam {
       .scan(Map.empty[City, Int])((cityCheckIns, city) =>
         cityCheckIns.updatedWith(city)(_.map(_ + 1).orElse(Some(1)))
       )
+      .chunkN(100000)
+      .map(_.last)
+      .unNone
       .map(topCities)
       .foreach(IO.println)
       .compile
@@ -69,6 +72,7 @@ object CityExam {
         .append(Stream(City("Sydney"), City("Sydney"), City("Lima")))
         .covary[IO]
 
-    processCheckIns(checkIns).unsafeRunSync()
+    // processCheckIns(checkIns).unsafeRunSync()
+    processCheckIns(checkInsLong).unsafeRunSync()
   }
 }
